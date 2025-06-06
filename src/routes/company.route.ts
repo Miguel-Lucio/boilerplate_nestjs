@@ -7,6 +7,9 @@ import {
 } from "../schemas/company.schema";
 import { validCnpj } from "../middlewares/validCnpj.middleware";
 import { validId } from "../middlewares/validId.middleware";
+import { existingToken } from "../middlewares/existingToken.middleware";
+import { validateToken } from "../middlewares/validateToken.middleware";
+import { validatePermissions } from "../middlewares/validatePermissions.middleware";
 
 export const companyRouter = Router();
 
@@ -23,10 +26,17 @@ companyRouter.get("/", (req: Request, res: Response) => {
   companyController.read(req, res);
 });
 
-companyRouter.use("/:id", validId);
-companyRouter.get("/:id", (req: Request, res: Response) => {
+companyRouter.get("/:id", validId, (req: Request, res: Response) => {
   companyController.readOne(req, res);
 });
+
+companyRouter.use(
+  "/:id",
+  existingToken,
+  validateToken,
+  validId,
+  validatePermissions
+);
 companyRouter.patch(
   "/:id",
   validateBody(companyUpdateSchema),
@@ -35,6 +45,7 @@ companyRouter.patch(
     companyController.update(req, res);
   }
 );
+
 companyRouter.delete("/:id", (req: Request, res: Response) => {
   companyController.remove(req, res);
 });
