@@ -6,16 +6,32 @@ export class Product {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ length: 120, unique: true })
+  @Column({ length: 120 })
   productName: string;
 
   @Column({ default: "" })
   description: string;
 
-  @Column({ default: 0 })
+  @Column("decimal", {
+    precision: 10,
+    scale: 2,
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   price: number;
 
-  @Column({ default: 0 })
+  @Column("decimal", {
+    precision: 10,
+    scale: 2,
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   stock: number;
 
   @ManyToOne(() => Company, (c) => c.products, { onDelete: "CASCADE" })
